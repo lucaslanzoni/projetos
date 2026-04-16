@@ -357,6 +357,11 @@
     footer { margin: 80px 64px 0; padding: 28px 0; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
     footer span { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.06em; }
 
+    /* ── RADAR HINT ── */
+    .radar-hint { margin: 12px 64px 0; font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); line-height: 1.7; letter-spacing: 0.02em; }
+    @media (max-width: 900px) { .radar-hint { margin-left: 32px; margin-right: 32px; } }
+    @media (max-width: 600px) { .radar-hint { margin-left: 24px; margin-right: 24px; } }
+
     /* ── MOBILE PREVIEW BUTTON ── */
     #btn-mobile {
       position: fixed; bottom: 28px; right: 28px; z-index: 150;
@@ -660,6 +665,7 @@
 
 <!-- RADAR -->
 <div class="section-label reveal" id="section-radar">Radar de marca — o peso de cada território</div>
+<p class="radar-hint reveal">Cada eixo representa um território de marca. Quanto mais a área laranja se aproxima da ponta do eixo, maior o peso recomendado daquele território na comunicação da Moxie. O centro é zero, a ponta é 100%.</p>
 <div class="radar-container reveal">
   <div class="radar-wrap">
     <div class="radar-chart">
