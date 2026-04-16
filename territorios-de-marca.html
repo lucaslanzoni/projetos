@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moxie — Estratégia de Marca</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #0d0d0d;
+      --white:   #f4f1ea;
+      --accent:  #d4501a;
+      --muted:   #8a8178;
+      --border:  #242424;
+      --card-bg: #141414;
+      --surface: #1a1a1a;
+      --c1: #6fcf7a; --c2: #e07a7a; --c3: #7a90e8; --c4: #e8c47a; --c5: #e07ac4;
+      --c1-dim: rgba(111,207,122,0.08); --c2-dim: rgba(224,122,122,0.08);
+      --c3-dim: rgba(122,144,232,0.08); --c4-dim: rgba(232,196,122,0.08);
+      --c5-dim: rgba(224,122,196,0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+    body { background: var(--black); color: var(--white); font-family: 'Space Grotesk', sans-serif; line-height: 1.6; overflow-x: hidden; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* ── NAV ── */
+    #nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 90;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 56px;
+      background: rgba(13,13,13,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transform: translateY(-100%); transition: transform 0.3s ease; gap: 24px;
+    }
+    #nav.visible { transform: translateY(0); }
+
+    .nav-brand { font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
+
+    .nav-territories { display: flex; align-items: center; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+    .nav-territories::-webkit-scrollbar { display: none; }
+
+    .nav-pill {
+      display: flex; align-items: center; gap: 6px; padding: 5px 12px;
+      border-radius: 100px; border: 1px solid transparent;
+      font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted); cursor: pointer;
+      transition: all 0.2s; white-space: nowrap; background: none;
+    }
+    .nav-pill:hover { color: var(--white); border-color: var(--border); }
+    .nav-pill.t1:hover, .nav-pill.t1.active { color: var(--c1); border-color: var(--c1); background: var(--c1-dim); }
+    .nav-pill.t2:hover, .nav-pill.t2.active { color: var(--c2); border-color: var(--c2); background: var(--c2-dim); }
+    .nav-pill.t3:hover, .nav-pill.t3.active { color: var(--c3); border-color: var(--c3); background: var(--c3-dim); }
+    .nav-pill.t4:hover, .nav-pill.t4.active { color: var(--c4); border-color: var(--c4); background: var(--c4-dim); }
+    .nav-pill.t5:hover, .nav-pill.t5.active { color: var(--c5); border-color: var(--c5); background: var(--c5-dim); }
+    .nav-pill .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .t1 .dot { background: var(--c1); } .t2 .dot { background: var(--c2); }
+    .t3 .dot { background: var(--c3); } .t4 .dot { background: var(--c4); }
+    .t5 .dot { background: var(--c5); }
+
+    .nav-sections { display: flex; align-items: center; gap: 20px; white-space: nowrap; }
+    .nav-sections a { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .nav-sections a:hover { color: var(--white); }
+
+    /* ── HAMBURGER ── */
+    .nav-hamburger {
+      display: none; flex-direction: column; gap: 5px; cursor: pointer;
+      padding: 7px; background: none; border: 1px solid var(--border);
+      border-radius: 6px; flex-shrink: 0;
+    }
+    .nav-hamburger span { display: block; width: 18px; height: 1.5px; background: var(--muted); transition: all 0.25s; border-radius: 1px; }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* ── MOBILE MENU ── */
+    #mobile-menu {
+      position: fixed; inset: 56px 0 0 0; z-index: 80;
+      background: rgba(13,13,13,0.98); backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border); padding: 32px 24px;
+      display: flex; flex-direction: column; gap: 28px;
+      transform: translateY(-100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+      overflow-y: auto;
+    }
+    #mobile-menu.open { transform: translateY(0); }
+    .mobile-section-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .mobile-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .mobile-nav-link { font-family: 'Space Mono', monospace; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--white); text-decoration: none; padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; transition: color 0.2s; }
+    .mobile-nav-link:hover { color: var(--accent); }
+    .mobile-nav-link svg { width: 14px; height: 14px; opacity: 0.35; }
+    .mobile-device-hint { display: flex; align-items: center; gap: 10px; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+    .mobile-device-hint svg { width: 16px; height: 16px; color: var(--accent); }
+
+    /* ── HERO ── */
+    #hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: flex-end; padding: 64px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+    .hero-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 80px 80px; opacity: 0.4; mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%); }
+    .hero-glow { position: absolute; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(212,80,26,0.06) 0%, transparent 70%); top: -100px; right: -100px; animation: pulse-glow 6s ease-in-out infinite; }
+    @keyframes pulse-glow { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.6; } }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-label { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+    .hero-label::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+    .hero-title { font-size: clamp(52px, 9vw, 120px); font-weight: 700; letter-spacing: -0.04em; line-height: 0.9; margin-bottom: 40px; }
+    .hero-title span { color: var(--accent); }
+    .hero-bottom { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+    .hero-desc { max-width: 480px; font-size: 16px; color: var(--muted); line-height: 1.7; }
+    .hero-desc strong { color: var(--white); font-weight: 500; }
+    .hero-meta { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); line-height: 2; text-align: right; }
+
+    /* ── SECTION LABEL ── */
+    .section-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); padding: 80px 64px 0; display: flex; align-items: center; gap: 16px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ── TERRITORY CARDS ── */
+    #territories { padding: 36px 64px 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+    .t-card { background: var(--card-bg); cursor: pointer; display: flex; flex-direction: column; transition: background 0.25s; position: relative; overflow: hidden; }
+    .t-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
+    .t-card.t1::after { background: var(--c1); } .t-card.t2::after { background: var(--c2); }
+    .t-card.t3::after { background: var(--c3); } .t-card.t4::after { background: var(--c4); }
+    .t-card.t5::after { background: var(--c5); }
+    .t-card:hover { background: #1c1c1c; }
+    .t-card:hover::after { transform: scaleX(1); }
+    .t-card:last-child:nth-child(3n - 2) { grid-column: 2; }
+
+    .card-icon-area { padding: 40px 36px 28px; display: flex; align-items: flex-start; justify-content: space-between; }
+    .card-icon { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 12px; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+    .t-card:hover .card-icon { transform: scale(1.1) rotate(-4deg); }
+    .t1 .card-icon { background: var(--c1-dim); color: var(--c1); } .t2 .card-icon { background: var(--c2-dim); color: var(--c2); }
+    .t3 .card-icon { background: var(--c3-dim); color: var(--c3); } .t4 .card-icon { background: var(--c4-dim); color: var(--c4); }
+    .t5 .card-icon { background: var(--c5-dim); color: var(--c5); }
+    .card-icon svg { width: 28px; height: 28px; }
+    .card-num { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.08em; }
+
+    .card-info { padding: 0 36px 36px; flex: 1; display: flex; flex-direction: column; gap: 14px; }
+    .card-badge { display: inline-flex; align-items: center; gap: 6px; font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 9px; border-radius: 2px; width: fit-content; }
+    .t1 .card-badge { background: rgba(111,207,122,0.12); color: var(--c1); }
+    .t2 .card-badge { background: rgba(224,122,122,0.12); color: var(--c2); }
+    .t3 .card-badge { background: rgba(122,144,232,0.12); color: var(--c3); }
+    .t4 .card-badge { background: rgba(232,196,122,0.12); color: var(--c4); }
+    .t5 .card-badge { background: rgba(224,122,196,0.12); color: var(--c5); }
+
+    .card-title { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+    .t1 .card-title { color: var(--c1); } .t2 .card-title { color: var(--c2); }
+    .t3 .card-title { color: var(--c3); } .t4 .card-title { color: var(--c4); }
+    .t5 .card-title { color: var(--c5); }
+    .card-sub { font-size: 12px; color: var(--muted); font-style: italic; }
+    .card-teaser { font-size: 13px; color: #b0a89e; line-height: 1.65; }
+    .card-cta { display: flex; align-items: center; gap: 6px; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: auto; transition: color 0.2s; }
+    .t-card:hover .card-cta { color: var(--white); }
+    .card-cta svg { width: 14px; height: 14px; transition: transform 0.2s; }
+    .t-card:hover .card-cta svg { transform: translateX(3px); }
+
+    /* ── MODAL ── */
+    #modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; display: flex; align-items: flex-end; justify-content: center; padding: 0; }
+    #modal-overlay.open { opacity: 1; pointer-events: auto; }
+    #modal { background: #181818; border: 1px solid var(--border); border-bottom: none; width: 100%; max-width: 860px; max-height: 90svh; overflow-y: auto; transform: translateY(40px); transition: transform 0.35s cubic-bezier(0.34,1.2,0.64,1); border-radius: 16px 16px 0 0; }
+    #modal-overlay.open #modal { transform: translateY(0); }
+    .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 16px auto 0; }
+    .modal-header { padding: 28px 40px 24px; display: flex; align-items: flex-start; gap: 20px; border-bottom: 1px solid var(--border); }
+    .modal-icon { width: 64px; height: 64px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .modal-icon svg { width: 32px; height: 32px; }
+    .modal-header-text { flex: 1; }
+    .modal-badge { display: inline-flex; align-items: center; gap: 6px; font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 9px; border-radius: 2px; margin-bottom: 8px; }
+    .modal-title { font-size: 26px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; margin-bottom: 4px; }
+    .modal-sub { font-size: 13px; color: var(--muted); font-style: italic; }
+    .modal-close { width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 8px; background: none; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; margin-left: auto; }
+    .modal-close:hover { color: var(--white); border-color: #444; background: #222; }
+    .modal-close svg { width: 16px; height: 16px; }
+    .modal-body { padding: 32px 40px 40px; display: flex; flex-direction: column; gap: 32px; }
+    .modal-desc { font-size: 15px; color: #c0b8ae; line-height: 1.75; }
+    .modal-attrs { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+    .modal-attr { background: var(--card-bg); padding: 20px 22px; display: flex; flex-direction: column; gap: 6px; }
+    .attr-lbl { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .attr-val { font-size: 14px; color: var(--white); line-height: 1.5; }
+    .modal-tags { display: flex; flex-direction: column; gap: 10px; }
+    .modal-tags-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { font-size: 12px; padding: 4px 12px; border: 1px solid var(--border); border-radius: 100px; color: var(--muted); }
+    .modal-risk { background: rgba(212,80,26,0.07); border: 1px solid rgba(212,80,26,0.2); border-radius: 8px; padding: 16px 20px; display: flex; gap: 14px; align-items: flex-start; }
+    .risk-icon { color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+    .risk-icon svg { width: 16px; height: 16px; }
+    .risk-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .risk-text { font-size: 13px; color: #c0b8ae; line-height: 1.6; }
+
+    /* ── TENSIONS ── */
+    .tension-container { margin: 36px 64px 0; }
+    .tension-grid { display: grid; grid-template-columns: 1fr 56px 1fr; border: 1px solid var(--border); }
+    .tension-col { background: var(--card-bg); padding: 32px; }
+    .tension-col-head { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+    .tension-col-head svg { width: 14px; height: 14px; }
+    .tension-col-head.is { color: var(--c1); } .tension-col-head.not { color: var(--c2); }
+    .tension-row { padding: 14px 0; border-bottom: 1px solid var(--border); cursor: default; transition: all 0.2s; }
+    .tension-row:last-child { border-bottom: none; }
+    .tension-row strong { display: block; font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 3px; transition: color 0.2s; }
+    .tension-row span { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .tension-row.highlighted strong { color: var(--c1); }
+    .tension-row.highlighted.neg strong { color: var(--c2); }
+    .tension-row.highlighted { background: rgba(255,255,255,0.02); margin: 0 -32px; padding: 14px 32px; }
+    .tension-mid { background: var(--border); display: flex; align-items: center; justify-content: center; }
+    .tension-mid p { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); writing-mode: vertical-rl; }
+
+    /* ── RADAR ── */
+    .radar-container { margin: 80px 64px 0; }
+    .radar-wrap { border: 1px solid var(--border); background: var(--card-bg); display: grid; grid-template-columns: 1fr 1fr; align-items: center; }
+    .radar-chart { padding: 40px; display: flex; align-items: center; justify-content: center; }
+    #radar-svg { width: 100%; max-width: 360px; }
+    .radar-legend { padding: 40px; border-left: 1px solid var(--border); display: flex; flex-direction: column; gap: 20px; }
+    .radar-legend-title { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .legend-row { display: flex; flex-direction: column; gap: 6px; }
+    .legend-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .legend-name { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--white); }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .legend-pct { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); }
+    .legend-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .legend-fill { height: 100%; border-radius: 2px; width: 0%; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+
+    /* ── ESSENCE ── */
+    #essence { margin: 80px 64px 0; border: 1px solid var(--border); background: var(--card-bg); position: relative; overflow: hidden; }
+    .essence-inner { display: grid; grid-template-columns: 1fr 1fr; align-items: center; position: relative; z-index: 1; }
+    .essence-left { padding: 64px; border-right: 1px solid var(--border); }
+    .essence-eyebrow { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 24px; }
+    .essence-quote { font-size: clamp(26px, 3.5vw, 40px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; }
+    .essence-quote em { color: var(--accent); font-style: normal; }
+    .essence-right { padding: 64px; display: flex; flex-direction: column; gap: 24px; }
+    .essence-item { display: flex; flex-direction: column; gap: 4px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+    .essence-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .essence-item .lbl { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .essence-item .val { font-size: 15px; font-weight: 500; color: var(--white); line-height: 1.45; }
+    .essence-bg-text { position: absolute; bottom: -20px; right: -10px; font-size: 200px; font-weight: 700; letter-spacing: -0.05em; color: rgba(255,255,255,0.02); line-height: 1; user-select: none; pointer-events: none; }
+
+    /* ── POSICIONAMENTO ── */
+    #positioning { margin: 36px 64px 0; }
+    .positioning-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+
+    .pos-pillar { background: var(--card-bg); padding: 40px 36px; display: flex; flex-direction: column; gap: 18px; cursor: pointer; transition: background 0.2s; }
+    .pos-pillar:hover { background: #1c1c1c; }
+    .pos-pillar-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(212,80,26,0.08); color: var(--accent); flex-shrink: 0; }
+    .pos-pillar-icon svg { width: 24px; height: 24px; }
+    .pos-pillar-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+    .pos-pillar-title { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; color: var(--white); }
+    .pos-pillar-short { font-size: 13px; color: #b0a89e; line-height: 1.65; }
+
+    .pos-pillar-expand { max-height: 0; overflow: hidden; transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1); }
+    .pos-pillar-expand.open { max-height: 500px; }
+    .pos-pillar-full { font-size: 13px; color: var(--muted); line-height: 1.75; padding-top: 16px; border-top: 1px solid var(--border); margin-top: 2px; }
+
+    .pos-toggle { display: flex; align-items: center; gap: 6px; font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-top: auto; transition: color 0.2s; }
+    .pos-toggle svg { width: 12px; height: 12px; transition: transform 0.3s; }
+    .pos-pillar.expanded .pos-toggle svg { transform: rotate(180deg); }
+    .pos-pillar:hover .pos-toggle { color: var(--accent); }
+
+    /* ── PÚBLICO ── */
+    #audience { margin: 36px 64px 0; }
+    .audience-wrap { border: 1px solid var(--border); background: var(--card-bg); }
+    .audience-tabs { display: flex; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+    .audience-tabs::-webkit-scrollbar { display: none; }
+
+    .aud-tab { padding: 16px 28px; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); cursor: pointer; border: none; border-bottom: 2px solid transparent; background: none; transition: all 0.2s; white-space: nowrap; }
+    .aud-tab:hover { color: var(--white); }
+    .aud-tab.active { color: var(--c4); border-bottom-color: var(--c4); }
+
+    .aud-panel { display: none; padding: 40px; gap: 32px; }
+    .aud-panel.active { display: grid; }
+    .aud-panel.two-col { grid-template-columns: 1fr 1fr; }
+    .aud-panel.one-col { grid-template-columns: 1fr; }
+
+    .aud-block { display: flex; flex-direction: column; gap: 12px; }
+    .aud-block-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--c4); }
+    .aud-block-title { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; color: var(--white); }
+    .aud-block-text { font-size: 14px; color: #b0a89e; line-height: 1.7; }
+
+    .aud-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .aud-list li { display: flex; gap: 12px; font-size: 13px; color: #b0a89e; line-height: 1.55; }
+    .aud-list li::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--c4); flex-shrink: 0; margin-top: 7px; }
+
+    .aud-not-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-top: 16px; }
+    .aud-not-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .aud-not-tag { font-size: 12px; padding: 4px 12px; border: 1px solid var(--border); border-radius: 100px; color: var(--muted); text-decoration: line-through; opacity: 0.55; }
+
+    .aud-tension-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+    .aud-tension-side { background: var(--card-bg); padding: 28px; display: flex; flex-direction: column; gap: 0; }
+    .aud-tension-head { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+    .aud-tension-head svg { width: 13px; height: 13px; }
+    .aud-tension-head.want { color: var(--c4); }
+    .aud-tension-head.frustration { color: var(--c2); }
+    .aud-tension-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .aud-tension-item:last-child { border-bottom: none; }
+    .aud-tension-item strong { display: block; font-size: 13px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+    .aud-tension-item span { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+    /* ── PRODUTO ── */
+    #product { margin: 36px 64px 0; }
+    .product-sections { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+
+    .diff-section {}
+    .diff-header { background: var(--card-bg); padding: 28px 36px; display: flex; align-items: center; justify-content: space-between; gap: 20px; cursor: pointer; transition: background 0.2s; }
+    .diff-header:hover { background: #1c1c1c; }
+    .diff-header-left { display: flex; align-items: center; gap: 16px; }
+    .diff-header-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: rgba(122,144,232,0.08); color: var(--c3); flex-shrink: 0; }
+    .diff-header-icon svg { width: 20px; height: 20px; }
+    .diff-header-text { display: flex; flex-direction: column; gap: 2px; }
+    .diff-eyebrow { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+    .diff-title { font-size: 16px; font-weight: 600; color: var(--white); }
+    .diff-chevron { color: var(--muted); transition: transform 0.3s; flex-shrink: 0; }
+    .diff-chevron svg { width: 18px; height: 18px; }
+    .diff-section.open .diff-chevron { transform: rotate(180deg); }
+
+    .diff-body { max-height: 0; overflow: hidden; transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1); background: var(--card-bg); }
+    .diff-section.open .diff-body { max-height: 1200px; }
+    .diff-content { padding: 0 36px 36px; border-top: 1px solid var(--border); }
+
+    .diff-items { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 24px; }
+    .diff-item { background: #0f0f0f; padding: 20px 24px; display: grid; grid-template-columns: 28px 1fr; gap: 16px; align-items: flex-start; }
+    .diff-item-num { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--c3); padding-top: 2px; }
+    .diff-item-body { display: flex; flex-direction: column; gap: 4px; }
+    .diff-item-body strong { font-size: 14px; font-weight: 600; color: var(--white); }
+    .diff-item-body span { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+    /* Positioning map */
+    .pos-map-wrap { padding: 40px; display: grid; grid-template-columns: 1fr 260px; gap: 40px; align-items: center; border-top: 1px solid var(--border); }
+    .pos-map-chart { width: 100%; }
+    .pos-map-chart svg { width: 100%; }
+    .pos-map-legend { display: flex; flex-direction: column; gap: 14px; }
+    .pos-map-legend-title { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .pos-legend-item { display: flex; align-items: flex-start; gap: 10px; }
+    .pos-legend-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+    .pos-legend-text { display: flex; flex-direction: column; gap: 2px; }
+    .pos-legend-name { font-size: 13px; font-weight: 500; color: var(--white); }
+    .pos-legend-category { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+    /* Platform cards */
+    .platform-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border-top: 1px solid var(--border); }
+    .platform-card { background: var(--card-bg); padding: 32px 28px; display: flex; flex-direction: column; gap: 20px; }
+    .platform-head { display: flex; align-items: center; gap: 12px; }
+    .platform-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .platform-icon.ig { background: rgba(224,122,196,0.1); color: var(--c5); }
+    .platform-icon.tt { background: rgba(111,207,122,0.1); color: var(--c1); }
+    .platform-icon.tw { background: rgba(122,144,232,0.1); color: var(--c3); }
+    .platform-icon svg { width: 20px; height: 20px; }
+    .platform-name { font-size: 16px; font-weight: 700; color: var(--white); }
+    .platform-role { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; }
+    .platform-role.ig { color: var(--c5); } .platform-role.tt { color: var(--c1); } .platform-role.tw { color: var(--c3); }
+    .platform-do { display: flex; flex-direction: column; gap: 8px; }
+    .platform-do-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+    .platform-do-item { display: flex; gap: 10px; font-size: 12px; color: #b0a89e; line-height: 1.5; }
+    .platform-do-item::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--muted); flex-shrink: 0; margin-top: 6px; }
+    .platform-dont { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border); }
+    .platform-dont-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c2); margin-bottom: 8px; }
+    .platform-dont-text { font-size: 12px; color: rgba(224,122,122,0.7); line-height: 1.5; }
+
+    /* ── FOOTER ── */
+    footer { margin: 80px 64px 0; padding: 28px 0; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    footer span { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.06em; }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      #nav { padding: 0 24px; }
+      .nav-territories, .nav-sections { display: none; }
+      .nav-hamburger { display: flex; }
+      #hero { padding: 40px 32px; }
+      .section-label { padding: 64px 32px 0; }
+      #territories { grid-template-columns: 1fr 1fr; padding: 28px 32px 0; }
+      .t-card:last-child:nth-child(3n - 2) { grid-column: auto; }
+      .tension-container, .radar-container, #essence, #positioning, #audience, #product, footer { margin-left: 32px; margin-right: 32px; }
+      .radar-wrap { grid-template-columns: 1fr; }
+      .radar-legend { border-left: none; border-top: 1px solid var(--border); }
+      .essence-inner { grid-template-columns: 1fr; }
+      .essence-left { border-right: none; border-bottom: 1px solid var(--border); padding: 40px; }
+      .essence-right { padding: 40px; }
+      .positioning-pillars { grid-template-columns: 1fr; }
+      .aud-panel.two-col { grid-template-columns: 1fr; }
+      .pos-map-wrap { grid-template-columns: 1fr; }
+      .platform-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      #hero { padding: 32px 24px; }
+      .hero-title { font-size: 48px; }
+      .section-label { padding: 56px 24px 0; }
+      #territories { grid-template-columns: 1fr; padding: 20px 24px 0; }
+      .tension-container, .radar-container, #essence, #positioning, #audience, #product, footer { margin-left: 24px; margin-right: 24px; }
+      .tension-grid { grid-template-columns: 1fr; }
+      .tension-mid { display: none; }
+      .modal-header { padding: 20px 24px; }
+      .modal-body { padding: 24px; }
+      .modal-attrs { grid-template-columns: 1fr; }
+      .aud-tension-pair { grid-template-columns: 1fr; }
+      .card-icon-area { padding: 28px 24px 18px; }
+      .card-info { padding: 0 24px 28px; }
+      .pos-pillar { padding: 28px 24px; }
+      .aud-panel { padding: 24px; }
+      .diff-header { padding: 20px 24px; }
+      .diff-content { padding: 0 24px 28px; }
+      .platform-card { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <span class="nav-brand">Moxie</span>
+  <div class="nav-territories">
+    <button class="nav-pill t1" onclick="openCard(0)"><span class="dot"></span>01 Piada</button>
+    <button class="nav-pill t2" onclick="openCard(1)"><span class="dot"></span>02 Urbano</button>
+    <button class="nav-pill t3" onclick="openCard(2)"><span class="dot"></span>03 Design</button>
+    <button class="nav-pill t4" onclick="openCard(3)"><span class="dot"></span>04 Manifesto</button>
+    <button class="nav-pill t5" onclick="openCard(4)"><span class="dot"></span>05 Carlos</button>
+  </div>
+  <div class="nav-sections">
+    <a href="#section-territories">Territórios</a>
+    <a href="#section-tensions">Tensões</a>
+    <a href="#section-radar">Radar</a>
+    <a href="#section-essence">Essência</a>
+    <a href="#section-positioning">Posicionamento</a>
+    <a href="#section-audience">Público</a>
+    <a href="#section-product">Produto</a>
+  </div>
+  <button class="nav-hamburger" id="hamburger" aria-label="Menu" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu">
+  <div>
+    <div class="mobile-section-label">Territórios de marca</div>
+    <div class="mobile-pills" style="margin-top:12px;">
+      <button class="nav-pill t1" onclick="openCard(0);closeMenu()"><span class="dot"></span>01 Piada</button>
+      <button class="nav-pill t2" onclick="openCard(1);closeMenu()"><span class="dot"></span>02 Urbano</button>
+      <button class="nav-pill t3" onclick="openCard(2);closeMenu()"><span class="dot"></span>03 Design</button>
+      <button class="nav-pill t4" onclick="openCard(3);closeMenu()"><span class="dot"></span>04 Manifesto</button>
+      <button class="nav-pill t5" onclick="openCard(4);closeMenu()"><span class="dot"></span>05 Carlos</button>
+    </div>
+  </div>
+  <div>
+    <div class="mobile-section-label">Seções</div>
+    <a href="#section-territories" class="mobile-nav-link" onclick="closeMenu()">Territórios <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+    <a href="#section-tensions" class="mobile-nav-link" onclick="closeMenu()">Tensões criativas <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+    <a href="#section-radar" class="mobile-nav-link" onclick="closeMenu()">Radar de territórios <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+    <a href="#section-essence" class="mobile-nav-link" onclick="closeMenu()">Essência de marca <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+    <a href="#section-positioning" class="mobile-nav-link" onclick="closeMenu()">Posicionamento <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+    <a href="#section-audience" class="mobile-nav-link" onclick="closeMenu()">Público ideal <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+    <a href="#section-product" class="mobile-nav-link" onclick="closeMenu()">Estratégia de produto <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+  </div>
+  <div class="mobile-device-hint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 17.5h.01"/></svg>
+    Versão mobile
+  </div>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"><div class="hero-grid"></div><div class="hero-glow"></div></div>
+  <div class="hero-content">
+    <div class="hero-label">Moxie — Estratégia de Marca</div>
+    <h1 class="hero-title">Estratégia<br>de <span>Marca</span></h1>
+    <div class="hero-bottom">
+      <p class="hero-desc">
+        Cinco territórios, três pilares de posicionamento, o perfil completo do público e a estratégia de produto. <strong>Tudo extraído do briefing com Gabriela, founder</strong> — sem invenção, sem template preenchido.
+      </p>
+      <div class="hero-meta">
+        Baseado em briefing com Gabriela, founder<br>
+        Documento de uso interno<br>
+        Abril 2026
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TERRITORIES -->
+<div class="section-label" id="section-territories">Os cinco territórios</div>
+<div id="territories">
+
+  <div class="t-card t1 reveal" onclick="openCard(0)" tabindex="0" role="button" aria-label="Abrir território 01">
+    <div class="card-icon-area">
+      <div class="card-icon">
+        <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 8 C5 6 7 5 9 5 L19 5 C21 5 23 6 23 8 L23 17 C23 19 21 20 19 20 L16 20 L14 24 L12 20 L9 20 C7 20 5 19 5 17 Z"/>
+          <line x1="9.5" y1="12" x2="12" y2="11" stroke-width="1.8"/>
+          <circle cx="17" cy="11.5" r="1.2" fill="currentColor" stroke="none"/>
+          <path d="M10 16 Q14 19 18 16" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <span class="card-num">01 / 05</span>
+    </div>
+    <div class="card-info">
+      <span class="card-badge">★ Primário — recomendado</span>
+      <h2 class="card-title">A Piada que Você Precisa Merecer</h2>
+      <p class="card-sub">Território do humor de repertório</p>
+      <p class="card-teaser">A Moxie não explica a piada. Quem entende, entende — e isso cria pertencimento imediato. A estampa não é decoração, é senha.</p>
+      <div class="card-cta">Ver território completo <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></div>
+    </div>
+  </div>
+
+  <div class="t-card t2 reveal" onclick="openCard(1)" tabindex="0" role="button" aria-label="Abrir território 02">
+    <div class="card-icon-area">
+      <div class="card-icon">
+        <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="14" cy="14" r="10"/>
+          <circle cx="14" cy="14" r="5.5" stroke-width="1.2"/>
+          <circle cx="14" cy="14" r="2" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <span class="card-num">02 / 05</span>
+    </div>
+    <div class="card-info">
+      <span class="card-badge">Secundário</span>
+      <h2 class="card-title">Urbano com Sotaque Próprio</h2>
+      <p class="card-sub">Território da identidade cultural urbana</p>
+      <p class="card-teaser">A Moxie é de São Paulo — Pinheiros, Santa Cecília, Copan. Bares com disco na parede, cafeterias com vinil. Estilo de vida real, não lifestyle genérico.</p>
+      <div class="card-cta">Ver território completo <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></div>
+    </div>
+  </div>
+
+  <div class="t-card t3 reveal" onclick="openCard(2)" tabindex="0" role="button" aria-label="Abrir território 03">
+    <div class="card-icon-area">
+      <div class="card-icon">
+        <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 22 L9 19 L22 6 L24 8 L11 21 Z"/>
+          <path d="M6 22 L4 24 L6 24 L8 22"/>
+          <path d="M22 6 L24 4 Q26 4 26 6 L24 8"/>
+          <line x1="20.5" y1="7.5" x2="22.5" y2="9.5" stroke-width="1"/>
+        </svg>
+      </div>
+      <span class="card-num">03 / 05</span>
+    </div>
+    <div class="card-info">
+      <span class="card-badge">Complementar</span>
+      <h2 class="card-title">O Design é o Argumento</h2>
+      <p class="card-sub">Território da excelência artesanal gráfica</p>
+      <p class="card-teaser">Enquanto concorrentes colam foto de série em camiseta, a Moxie transforma a brincadeira em ilustração. O processo gráfico é o diferencial.</p>
+      <div class="card-cta">Ver território completo <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></div>
+    </div>
+  </div>
+
+  <div class="t-card t4 reveal" onclick="openCard(3)" tabindex="0" role="button" aria-label="Abrir território 04">
+    <div class="card-icon-area">
+      <div class="card-icon">
+        <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 5 Q7 8 3 8 L5 13 L8 12 L8 23 L20 23 L20 12 L23 13 L25 8 Q21 8 19 5 Q17 8 14 8 Q11 8 9 5Z"/>
+        </svg>
+      </div>
+      <span class="card-num">04 / 05</span>
+    </div>
+    <div class="card-info">
+      <span class="card-badge">Complementar</span>
+      <h2 class="card-title">A Roupa Como Manifesto Silencioso</h2>
+      <p class="card-sub">Território da expressão de identidade</p>
+      <p class="card-teaser">Vestir Moxie é uma declaração sem precisar fazer discurso. O público escolhe o que comunica quem é. A roupa como ferramenta de auto-expressão.</p>
+      <div class="card-cta">Ver território completo <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></div>
+    </div>
+  </div>
+
+  <div class="t-card t5 reveal" onclick="openCard(4)" tabindex="0" role="button" aria-label="Abrir território 05">
+    <div class="card-icon-area">
+      <div class="card-icon">
+        <svg viewBox="0 0 28 28" fill="currentColor" stroke="none">
+          <ellipse cx="14" cy="19.5" rx="5.5" ry="4.5"/>
+          <ellipse cx="7.5" cy="15" rx="2.3" ry="3"/>
+          <ellipse cx="11" cy="11.5" rx="2.3" ry="3"/>
+          <ellipse cx="17" cy="11.5" rx="2.3" ry="3"/>
+          <ellipse cx="20.5" cy="15" rx="2.3" ry="3"/>
+        </svg>
+      </div>
+      <span class="card-num">05 / 05</span>
+    </div>
+    <div class="card-info">
+      <span class="card-badge">Exploratório</span>
+      <h2 class="card-title">Carlos e o Universo Expandido</h2>
+      <p class="card-sub">Território do entretenimento de marca</p>
+      <p class="card-teaser">Carlos não é mascote — é personagem. A Moxie como produtora de cultura. Carlos conta histórias, comenta o mundo, tem opiniões próprias.</p>
+      <div class="card-cta">Ver território completo <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div id="modal-overlay" role="dialog" aria-modal="true" onclick="handleOverlayClick(event)">
+  <div id="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-icon" id="m-icon"></div>
+      <div class="modal-header-text">
+        <div class="modal-badge" id="m-badge"></div>
+        <h2 class="modal-title" id="m-title"></h2>
+        <p class="modal-sub" id="m-sub"></p>
+      </div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Fechar">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-desc" id="m-desc"></p>
+      <div class="modal-attrs" id="m-attrs"></div>
+      <div class="modal-tags" id="m-tags"></div>
+      <div class="modal-risk" id="m-risk">
+        <div class="risk-icon">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 2L15 14H1L8 2z"/><line x1="8" y1="7" x2="8" y2="10"/>
+            <circle cx="8" cy="12.5" r="0.5" fill="currentColor" stroke="none"/>
+          </svg>
+        </div>
+        <div><div class="risk-label">Risco</div><div class="risk-text" id="m-risk-text"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TENSIONS -->
+<div class="section-label reveal" id="section-tensions">Tensões criativas da marca</div>
+<div class="tension-container reveal">
+  <div class="tension-grid">
+    <div class="tension-col">
+      <div class="tension-col-head is">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 7 L5 10 L12 3"/></svg>
+        O que a Moxie É
+      </div>
+      <div class="tension-row" data-pair="0"><strong>Humor inteligente</strong><span>Piada que exige repertório. Só funciona pra quem está dentro.</span></div>
+      <div class="tension-row" data-pair="1"><strong>Design como processo</strong><span>Brincadeira vira ilustração — não template, não foto colada.</span></div>
+      <div class="tension-row" data-pair="2"><strong>Qualidade sem pedantismo</strong><span>100% algodão, caimento legal, mas sem se levar a sério demais.</span></div>
+      <div class="tension-row" data-pair="3"><strong>Urbana e específica</strong><span>Tem endereço: Zona Oeste, vinil, Copan, bares com personalidade.</span></div>
+      <div class="tension-row" data-pair="4"><strong>Cultural antes de comercial</strong><span>A estampa conta história. A venda é consequência.</span></div>
+    </div>
+    <div class="tension-mid"><p>tensão</p></div>
+    <div class="tension-col">
+      <div class="tension-col-head not">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3 L11 11 M11 3 L3 11"/></svg>
+        O que a Moxie Não É
+      </div>
+      <div class="tension-row neg" data-pair="0"><strong>Humor de churrasco</strong><span>Sem piada fácil, sem "sou gênio" em camiseta preta.</span></div>
+      <div class="tension-row neg" data-pair="1"><strong>Foto de série impressa</strong><span>Sem atalhos gráficos. A estampa nasce do zero.</span></div>
+      <div class="tension-row neg" data-pair="2"><strong>Premium arrogante</strong><span>Não justifica preço com discurso — mostra com o produto.</span></div>
+      <div class="tension-row neg" data-pair="3"><strong>Marca geek</strong><span>Não é colecionismo de fandom. É repertório cultural amplo.</span></div>
+      <div class="tension-row neg" data-pair="4"><strong>Lifestyle vazio</strong><span>Sem aspiração genérica. Cada post tem ponto de vista real.</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- RADAR -->
+<div class="section-label reveal" id="section-radar">Radar de marca — o peso de cada território</div>
+<div class="radar-container reveal">
+  <div class="radar-wrap">
+    <div class="radar-chart">
+      <svg id="radar-svg" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="200,110 330,183 280,307 120,307 70,183" fill="none" stroke="#242424" stroke-width="1"/>
+        <polygon points="200,140 308,201 266,299 134,299 92,201" fill="none" stroke="#242424" stroke-width="1"/>
+        <polygon points="200,170 286,219 252,291 148,291 114,219" fill="none" stroke="#1e1e1e" stroke-width="1"/>
+        <polygon points="200,200 264,237 238,283 162,283 136,237" fill="none" stroke="#1e1e1e" stroke-width="1"/>
+        <line x1="200" y1="200" x2="200" y2="80" stroke="#2a2a2a" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="200" y1="200" x2="352" y2="165" stroke="#2a2a2a" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="200" y1="200" x2="294" y2="315" stroke="#2a2a2a" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="200" y1="200" x2="106" y2="315" stroke="#2a2a2a" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="200" y1="200" x2="48" y2="165" stroke="#2a2a2a" stroke-width="1" stroke-dasharray="3,3"/>
+        <polygon id="radar-poly" points="" fill="rgba(212,80,26,0.08)" stroke="rgba(212,80,26,0.6)" stroke-width="2" stroke-linejoin="round"/>
+        <circle id="rd0" cx="200" cy="200" r="5" fill="#6fcf7a" opacity="0"/>
+        <circle id="rd1" cx="200" cy="200" r="5" fill="#e07a7a" opacity="0"/>
+        <circle id="rd2" cx="200" cy="200" r="5" fill="#7a90e8" opacity="0"/>
+        <circle id="rd3" cx="200" cy="200" r="5" fill="#e8c47a" opacity="0"/>
+        <circle id="rd4" cx="200" cy="200" r="5" fill="#e07ac4" opacity="0"/>
+        <circle cx="200" cy="200" r="3" fill="#333"/>
+        <!-- T1: Humor — speech bubble wink, centrado em (200,55) -->
+        <g transform="translate(193,48) scale(0.5)" fill="none" stroke="#6fcf7a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <title>Humor de Repertório</title>
+          <path d="M5 8 C5 6 7 5 9 5 L19 5 C21 5 23 6 23 8 L23 17 C23 19 21 20 19 20 L16 20 L14 24 L12 20 L9 20 C7 20 5 19 5 17 Z"/>
+          <line x1="9.5" y1="12" x2="12" y2="11" stroke-width="1.8"/>
+          <circle cx="17" cy="11.5" r="1.2" fill="#6fcf7a" stroke="none"/>
+          <path d="M10 16 Q14 19 18 16" stroke-width="1.5"/>
+        </g>
+        <!-- T2: Urbano — disco de vinil, centrado em (360,162) -->
+        <g transform="translate(353,155) scale(0.5)" fill="none" stroke="#e07a7a" stroke-width="2" stroke-linecap="round">
+          <title>Urbano com Sotaque Próprio</title>
+          <circle cx="14" cy="14" r="10"/>
+          <circle cx="14" cy="14" r="5.5" stroke-width="1.2"/>
+          <circle cx="14" cy="14" r="2" fill="#e07a7a" stroke="none"/>
+        </g>
+        <!-- T3: Design — lápis, centrado em (308,338) -->
+        <g transform="translate(301,331) scale(0.5)" fill="none" stroke="#7a90e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <title>Design Artesanal</title>
+          <path d="M6 22 L9 19 L22 6 L24 8 L11 21 Z"/>
+          <path d="M6 22 L4 24 L6 24 L8 22"/>
+          <path d="M22 6 L24 4 Q26 4 26 6 L24 8"/>
+        </g>
+        <!-- T4: Identidade — camiseta, centrado em (94,338) -->
+        <g transform="translate(87,331) scale(0.5)" fill="none" stroke="#e8c47a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <title>Manifesto de Identidade</title>
+          <path d="M9 5 Q7 8 3 8 L5 13 L8 12 L8 23 L20 23 L20 12 L23 13 L25 8 Q21 8 19 5 Q17 8 14 8 Q11 8 9 5Z"/>
+        </g>
+        <!-- T5: Carlos — patinha, centrado em (18,162) -->
+        <g transform="translate(11,155) scale(0.5)" stroke="none">
+          <title>Carlos e o Universo Expandido</title>
+          <ellipse cx="14" cy="19.5" rx="5.5" ry="4.5" fill="#e07ac4"/>
+          <ellipse cx="7.5" cy="15" rx="2.3" ry="3" fill="#e07ac4"/>
+          <ellipse cx="11" cy="11.5" rx="2.3" ry="3" fill="#e07ac4"/>
+          <ellipse cx="17" cy="11.5" rx="2.3" ry="3" fill="#e07ac4"/>
+          <ellipse cx="20.5" cy="15" rx="2.3" ry="3" fill="#e07ac4"/>
+        </g>
+      </svg>
+    </div>
+    <div class="radar-legend">
+      <div class="radar-legend-title">Peso recomendado por território</div>
+      <div class="legend-row"><div class="legend-label"><span class="legend-name"><span class="legend-dot" style="background:var(--c1)"></span>01 — Humor de Repertório</span><span class="legend-pct">95%</span></div><div class="legend-bar"><div class="legend-fill" style="background:var(--c1)" data-pct="95"></div></div></div>
+      <div class="legend-row"><div class="legend-label"><span class="legend-name"><span class="legend-dot" style="background:var(--c2)"></span>02 — Urbano / SP</span><span class="legend-pct">72%</span></div><div class="legend-bar"><div class="legend-fill" style="background:var(--c2)" data-pct="72"></div></div></div>
+      <div class="legend-row"><div class="legend-label"><span class="legend-name"><span class="legend-dot" style="background:var(--c3)"></span>03 — Design Artesanal</span><span class="legend-pct">85%</span></div><div class="legend-bar"><div class="legend-fill" style="background:var(--c3)" data-pct="85"></div></div></div>
+      <div class="legend-row"><div class="legend-label"><span class="legend-name"><span class="legend-dot" style="background:var(--c4)"></span>04 — Manifesto de Identidade</span><span class="legend-pct">78%</span></div><div class="legend-bar"><div class="legend-fill" style="background:var(--c4)" data-pct="78"></div></div></div>
+      <div class="legend-row"><div class="legend-label"><span class="legend-name"><span class="legend-dot" style="background:var(--c5)"></span>05 — Universo Carlos</span><span class="legend-pct">62%</span></div><div class="legend-bar"><div class="legend-fill" style="background:var(--c5)" data-pct="62"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ESSENCE -->
+<div class="section-label reveal" id="section-essence">Essência de marca</div>
+<div class="reveal" id="essence">
+  <div class="essence-inner">
+    <div class="essence-left">
+      <div class="essence-eyebrow">Síntese estratégica</div>
+      <div class="essence-quote">"Roupa pra quem<br><em>entende a piada</em><br>e sabe como<br>se vestir."</div>
+    </div>
+    <div class="essence-right">
+      <div class="essence-item"><span class="lbl">Propósito</span><span class="val">Transformar referência cultural em objeto de desejo com design real</span></div>
+      <div class="essence-item"><span class="lbl">Posicionamento</span><span class="val">A única marca de humor que não abre mão do acabamento</span></div>
+      <div class="essence-item"><span class="lbl">Personalidade</span><span class="val">Irônica, culta, urbana, boêmia — sem ser chata sobre isso</span></div>
+      <div class="essence-item"><span class="lbl">Promessa ao público</span><span class="val">Você vai usar e alguém vai perguntar. E vai valer a resposta.</span></div>
+      <div class="essence-item"><span class="lbl">Território prioritário</span><span class="val">01 — A Piada que Você Precisa Merecer</span></div>
+    </div>
+  </div>
+  <div class="essence-bg-text">M</div>
+</div>
+
+<!-- ─── POSICIONAMENTO ─── -->
+<div class="section-label reveal" id="section-positioning">Posicionamento — o que a Moxie ocupa</div>
+<div class="reveal" id="positioning">
+  <div class="positioning-pillars">
+
+    <div class="pos-pillar" onclick="togglePillar(this)">
+      <div class="pos-pillar-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a7 7 0 100 14A7 7 0 0012 2z"/><path d="M8.5 8.5 Q12 6 15.5 8.5"/><path d="M9 13 Q12 16 15 13" stroke-width="1.2"/>
+        </svg>
+      </div>
+      <span class="pos-pillar-label">Descritivo</span>
+      <div class="pos-pillar-title">O que a Moxie é</div>
+      <p class="pos-pillar-short">Moda que vive no cruzamento entre humor inteligente e design de qualidade. Não é nenhuma das coisas separadas — é as duas ao mesmo tempo.</p>
+      <div class="pos-pillar-expand">
+        <p class="pos-pillar-full">Não é marca geek. Não é streetwear genérico. Não é piada fácil de churrasco. É a marca de quem tem repertório cultural e sabe que roupa comunica isso — e que existe uma lacuna clara entre marcas que têm humor e marcas que têm qualidade. A Moxie resolve essa lacuna. O ponto de entrada é o humor, mas o que sustenta a compra é o design e o material. Quem compra Moxie compra o pacote inteiro: a piada, o processo gráfico, e a peça que dura.</p>
+      </div>
+      <div class="pos-toggle"><span>Expandir</span><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg></div>
+    </div>
+
+    <div class="pos-pillar" onclick="togglePillar(this)">
+      <div class="pos-pillar-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22V12"/><path d="M5 12H2a10 10 0 0014.243 9.05"/><path d="M19 12h3A10 10 0 005 5.172"/>
+          <path d="M12 2v4"/><path d="M15 5l-3-3-3 3"/>
+        </svg>
+      </div>
+      <span class="pos-pillar-label">Promessa</span>
+      <div class="pos-pillar-title">O que ela entrega de verdade</div>
+      <p class="pos-pillar-short">Você vai usar e alguém vai perguntar. E quando explicar de onde vem a referência, vai valer cada centavo.</p>
+      <div class="pos-pillar-expand">
+        <p class="pos-pillar-full">A promessa da Moxie não é qualidade de tecido nem humor de nicho — esses são atributos, não promessa. A promessa real é a experiência de usar algo que exige repertório para fazer sentido. Quando faz sentido, cria um momento de cumplicidade que nenhuma outra marca entrega. O produto é a desculpa. A conexão que ele gera é o entregável real. A marca não precisa se vender — deixa o produto aparecer e o momento acontecer.</p>
+      </div>
+      <div class="pos-toggle"><span>Expandir</span><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg></div>
+    </div>
+
+    <div class="pos-pillar" onclick="togglePillar(this)">
+      <div class="pos-pillar-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M3 12 Q8 6 12 12 Q16 18 21 12"/>
+          <line x1="12" y1="3" x2="12" y2="21"/>
+        </svg>
+      </div>
+      <span class="pos-pillar-label">Visão de mundo</span>
+      <div class="pos-pillar-title">No que a Moxie acredita</div>
+      <p class="pos-pillar-short">O mercado trata quem tem repertório como se fosse igual a quem não tem. Coloca foto de série em camiseta e chama de produto cultural.</p>
+      <div class="pos-pillar-expand">
+        <p class="pos-pillar-full">A Moxie acredita que humor de verdade exige processo. Que design cuidadoso não é opcional quando o produto se propõe a ser cultural. Que existe um público que sabe a diferença entre uma referência executada com capricho e uma foto colada — e esse público estava sendo mal servido. Isso é o que a marca quer mudar: provar que é possível fazer as duas coisas ao mesmo tempo, sem atalho, sem concessão. Quem tem repertório merece produto à altura.</p>
+      </div>
+      <div class="pos-toggle"><span>Expandir</span><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4l4 4 4-4"/></svg></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── PÚBLICO ─── -->
+<div class="section-label reveal" id="section-audience">O público que entende a piada</div>
+<div class="reveal" id="audience">
+  <div class="audience-wrap">
+    <div class="audience-tabs">
+      <button class="aud-tab active" onclick="switchTab(0)">Quem é</button>
+      <button class="aud-tab" onclick="switchTab(1)">Como vive</button>
+      <button class="aud-tab" onclick="switchTab(2)">Como compra</button>
+      <button class="aud-tab" onclick="switchTab(3)">O que quer (e não encontra)</button>
+    </div>
+
+    <!-- Tab 0: Quem é -->
+    <div class="aud-panel two-col active" id="aud-panel-0">
+      <div class="aud-block">
+        <span class="aud-block-label">Perfil central</span>
+        <div class="aud-block-title">Entre nerd e hipster. Nem um, nem outro completamente.</div>
+        <p class="aud-block-text">25–35 anos, millennials. Cresceu com as referências que a Moxie vai trabalhar. Tem repertório ativo — não só passivo. Sabe o que está estampado e por que aquilo é engraçado, e isso importa.</p>
+        <ul class="aud-list">
+          <li>Zona Oeste de SP como referência geográfica — Pinheiros, Santa Cecília, Higienópolis — ou o equivalente cultural em outras cidades</li>
+          <li>Escolhe roupa como quem escolhe o que ouve: com intenção e ponto de vista</li>
+          <li>Monta looks com cuidado, mas não para chamar atenção — para comunicar algo</li>
+          <li>Não é low profile. Se importa com o que veste.</li>
+        </ul>
+      </div>
+      <div class="aud-block">
+        <span class="aud-block-label">Quem não é o público</span>
+        <div class="aud-block-title">A marca tem filtro natural — e isso é proposital.</div>
+        <p class="aud-block-text">Parte do posicionamento da Moxie é saber quem ela rejeita. A piada que precisa ser explicada já falhou. O público certo sabe disso.</p>
+        <div class="aud-not-label">Não é para quem</div>
+        <div class="aud-not-tags">
+          <span class="aud-not-tag">menores de 20 anos</span>
+          <span class="aud-not-tag">sem interesse em cultura pop</span>
+          <span class="aud-not-tag">perfil low profile</span>
+          <span class="aud-not-tag">prefere peças lisas</span>
+          <span class="aud-not-tag">público mais velho sem repertório</span>
+          <span class="aud-not-tag">humor de churrasco</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 1: Como vive -->
+    <div class="aud-panel two-col" id="aud-panel-1">
+      <div class="aud-block">
+        <span class="aud-block-label">Lifestyle</span>
+        <div class="aud-block-title">Consome cultura com curadoria, não por algoritmo.</div>
+        <p class="aud-block-text">Vai a lugares com personalidade. Conhece os bares que tocam vinil, os cinemas que passam filmes que não estão no streaming, as cafeterias que têm cara própria. Tem opinião sobre tudo isso.</p>
+        <ul class="aud-list">
+          <li>Compra vinil, frequenta bares da moda e ambientes culturais urbanos</li>
+          <li>Vai ao Copan, conhece os lugares com personalidade da cidade</li>
+          <li>Consome memes, cultura pop, música, séries, literatura — por prazer ativo, não obrigação</li>
+          <li>Segue: @meltedvideos, @saquinhodelixo, páginas de memes de nicho</li>
+        </ul>
+      </div>
+      <div class="aud-block">
+        <span class="aud-block-label">Roupa no contexto de vida</span>
+        <div class="aud-block-title">A roupa é extensão do repertório, não decoração.</div>
+        <p class="aud-block-text">Não compra por compulsão. Compra quando acha algo que diz algo. O insight central: essa pessoa escolhe o que veste como quem escolhe o que ouve — a estampa é sinal de pertencimento a um repertório específico.</p>
+        <ul class="aud-list">
+          <li>A narrativa por trás da peça importa tanto quanto a peça em si</li>
+          <li>Prefere ter menos roupas — e que cada uma valha a pena</li>
+          <li>Não se importa com preço alto se o produto tiver nível</li>
+          <li>Vai mostrar para o amigo. Vai contar de onde vem a referência.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Tab 2: Como compra -->
+    <div class="aud-panel two-col" id="aud-panel-2">
+      <div class="aud-block">
+        <span class="aud-block-label">Comportamento de compra</span>
+        <div class="aud-block-title">Pesquisa antes. Não compra sem entender o que é.</div>
+        <p class="aud-block-text">O processo de compra passa por identificação com a marca, não por promoção ou urgência. Esse público desconfia de marca que empurra demais — confia em descoberta orgânica. Um amigo que indica vale mais que qualquer anúncio pago.</p>
+        <ul class="aud-list">
+          <li>A história por trás da estampa é gatilho de decisão — mais que o preço</li>
+          <li>Prefere pagar mais numa marca com personalidade do que economizar numa sem</li>
+          <li>É influenciado por micro influenciadores com repertório real, não macro com audiência genérica</li>
+          <li>Desconfia de produto muito polido — quer ver o nível real, não o photoshop</li>
+        </ul>
+      </div>
+      <div class="aud-block">
+        <span class="aud-block-label">O que converte</span>
+        <div class="aud-block-title">Reconhecimento. Não persuasão.</div>
+        <p class="aud-block-text">Não é a venda que converte — é o momento em que essa pessoa vê a estampa e entende a referência. A partir daí a compra é quase automática. O trabalho da marca é fazer esse encontro acontecer.</p>
+        <ul class="aud-list">
+          <li>Boca a boca entre pessoas com repertório similar tem potencial de viralização alto</li>
+          <li>Conteúdo que narra a história da estampa funciona como gatilho de identificação</li>
+          <li>Kit de seeding temático — camiseta + produto parceiro com relação cultural — cria experiência, não só brinde</li>
+          <li>A métrica real: "Você precisa conhecer essa marca" — não cliques</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Tab 3: O que quer -->
+    <div class="aud-panel one-col" id="aud-panel-3">
+      <div class="aud-tension-pair">
+        <div class="aud-tension-side">
+          <div class="aud-tension-head want">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="6.5" cy="7" r="5.5"/><path d="M6.5 4.5v2.5l2 1.5"/></svg>
+            O que quer e não encontra
+          </div>
+          <div class="aud-tension-item"><strong>Humor e qualidade no mesmo produto</strong><span>Não quer ter que escolher entre piada boa e material decente. O mercado não entrega as duas coisas juntas.</span></div>
+          <div class="aud-tension-item"><strong>Referências com camadas</strong><span>Não quer a referência óbvia. Quer a piada que precisa de contexto — que soa como piada interna entre quem sabe.</span></div>
+          <div class="aud-tension-item"><strong>Marca que não precise de explicação</strong><span>O produto em si tem que comunicar o que a marca é. Não precisa de manifesto em caption.</span></div>
+          <div class="aud-tension-item"><strong>Pertencimento sem declaração</strong><span>Quer sentir que faz parte de um grupo sem precisar falar sobre isso. A roupa faz o trabalho.</span></div>
+        </div>
+        <div class="aud-tension-side">
+          <div class="aud-tension-head frustration">
+            <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 3l7 7M10 3l-7 7"/></svg>
+            O que o mercado entrega hoje
+          </div>
+          <div class="aud-tension-item"><strong>Humor barato em tecido ruim</strong><span>Marcas de humor abrem mão do material. Cobram R$ 39 e entregam R$ 39. Não tem porquê usar.</span></div>
+          <div class="aud-tension-item"><strong>Foto de série colada em camiseta</strong><span>Não é design — é atalho gráfico. Qualquer um faz. Não tem processo, não tem ponto de vista.</span></div>
+          <div class="aud-tension-item"><strong>Qualidade sem personalidade</strong><span>Marcas premium de streetwear entregam material, mas são sérias demais. Sem humor, sem referência, sem graça.</span></div>
+          <div class="aud-tension-item"><strong>Lifestyle genérico</strong><span>Marcas tentam vender estilo de vida aspiracional sem especificidade. O público não se vê ali.</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── PRODUTO ─── -->
+<div class="section-label reveal" id="section-product">O produto no mercado</div>
+<div class="reveal" id="product">
+  <div class="product-sections">
+
+    <!-- Diferenciais -->
+    <div class="diff-section" id="diff-1">
+      <div class="diff-header" onclick="toggleDiff('diff-1')">
+        <div class="diff-header-left">
+          <div class="diff-header-icon">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 2l2.5 5 5.5.8-4 3.9.9 5.5L10 14.5 5.1 17.2l.9-5.5L2 7.8l5.5-.8z"/>
+            </svg>
+          </div>
+          <div class="diff-header-text">
+            <span class="diff-eyebrow">01 — Diferenciais</span>
+            <span class="diff-title">O que só a Moxie tem</span>
+          </div>
+        </div>
+        <div class="diff-chevron"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 7l5 5 5-5"/></svg></div>
+      </div>
+      <div class="diff-body">
+        <div class="diff-content">
+          <div class="diff-items">
+            <div class="diff-item"><span class="diff-item-num">01</span><div class="diff-item-body"><strong>Design original — a estampa nasce do zero</strong><span>Não é foto colada, não é template, não é atalho gráfico. Cada estampa é resultado de processo gráfico real. Isso é o que separa a Moxie de 90% do mercado de camisetas com humor.</span></div></div>
+            <div class="diff-item"><span class="diff-item-num">02</span><div class="diff-item-body"><strong>Humor de nicho com repertório real</strong><span>Referências com camadas — não a piada óbvia que qualquer um entende. Trocadilhas, micro referências, piadas internas. O filtro é proposital: seleciona o público certo e rejeita quem não está dentro.</span></div></div>
+            <div class="diff-item"><span class="diff-item-num">03</span><div class="diff-item-body"><strong>Material que não pede desculpa</strong><span>100% algodão, caimento trabalhado. Ticket médio de R$ 100–300 é decisão estratégica, não arrogância. A comunicação não defende o preço — mostra o nível.</span></div></div>
+            <div class="diff-item"><span class="diff-item-num">04</span><div class="diff-item-body"><strong>Linha curta e curada — não é catálogo</strong><span>Bonés, camisetas, bags. Cada peça precisa ganhar o direito de existir na coleção. Isso cria valor de escassez sem precisar declarar.</span></div></div>
+            <div class="diff-item"><span class="diff-item-num">05</span><div class="diff-item-body"><strong>Estética retrô anos 70 com pegada urbana</strong><span>Assinatura visual reconhecível que funciona como identidade de produto antes de ser identidade de marca. Não é só "camiseta preta com estampa".</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mapa de posicionamento -->
+    <div class="diff-section" id="diff-2">
+      <div class="diff-header" onclick="toggleDiff('diff-2')">
+        <div class="diff-header-left">
+          <div class="diff-header-icon">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <circle cx="10" cy="10" r="8"/><line x1="2" y1="10" x2="18" y2="10"/><line x1="10" y1="2" x2="10" y2="18"/>
+            </svg>
+          </div>
+          <div class="diff-header-text">
+            <span class="diff-eyebrow">02 — Mapa de posicionamento</span>
+            <span class="diff-title">Como a Moxie fica no mercado</span>
+          </div>
+        </div>
+        <div class="diff-chevron"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 7l5 5 5-5"/></svg></div>
+      </div>
+      <div class="diff-body">
+        <div class="pos-map-wrap">
+          <div class="pos-map-chart">
+            <svg id="pos-map-svg" viewBox="0 0 420 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="420" height="400" fill="#0f0f0f"/>
+              <rect x="40" y="30" width="165" height="165" fill="rgba(224,122,122,0.03)"/>
+              <rect x="215" y="30" width="165" height="165" fill="rgba(212,80,26,0.05)"/>
+              <rect x="40" y="205" width="165" height="165" fill="rgba(255,255,255,0.01)"/>
+              <rect x="215" y="205" width="165" height="165" fill="rgba(111,207,122,0.02)"/>
+              <line x1="40" y1="205" x2="380" y2="205" stroke="#242424" stroke-width="1"/>
+              <line x1="210" y1="30" x2="210" y2="370" stroke="#242424" stroke-width="1"/>
+              <rect x="40" y="30" width="340" height="340" fill="none" stroke="#2a2a2a" stroke-width="1"/>
+              <text x="210" y="22" text-anchor="middle" fill="#555" font-family="'Space Mono',monospace" font-size="8" letter-spacing="1">HUMOR INTELIGENTE</text>
+              <text x="210" y="390" text-anchor="middle" fill="#555" font-family="'Space Mono',monospace" font-size="8" letter-spacing="1">HUMOR GENÉRICO</text>
+              <text x="12" y="208" text-anchor="middle" fill="#555" font-family="'Space Mono',monospace" font-size="8" letter-spacing="1" transform="rotate(-90,12,208)">QUALIDADE BAIXA</text>
+              <text x="410" y="208" text-anchor="middle" fill="#555" font-family="'Space Mono',monospace" font-size="8" letter-spacing="1" transform="rotate(90,410,208)">QUALIDADE ALTA</text>
+              <!-- Competitors -->
+              <circle cx="110" cy="80" r="5" fill="#e07a7a" opacity="0.65"/>
+              <text x="118" y="78" fill="#666" font-family="'Space Mono',monospace" font-size="8">Strip Me</text>
+              <text x="118" y="89" fill="#666" font-family="'Space Mono',monospace" font-size="8">El Cabriton</text>
+              <circle cx="145" cy="115" r="5" fill="#e8c47a" opacity="0.55"/>
+              <text x="153" y="119" fill="#666" font-family="'Space Mono',monospace" font-size="8">Sometimes</text>
+              <circle cx="310" cy="140" r="5" fill="#7a90e8" opacity="0.6"/>
+              <text x="318" y="144" fill="#666" font-family="'Space Mono',monospace" font-size="8">Bolovo</text>
+              <circle cx="315" cy="280" r="5" fill="#555" opacity="0.7"/>
+              <text x="323" y="284" fill="#555" font-family="'Space Mono',monospace" font-size="8">Chico Rei</text>
+              <circle cx="260" cy="300" r="5" fill="#444" opacity="0.7"/>
+              <text x="268" y="304" fill="#555" font-family="'Space Mono',monospace" font-size="8">Bossa / Colo</text>
+              <!-- Moxie -->
+              <circle id="moxie-ring" cx="338" cy="68" r="18" fill="rgba(212,80,26,0.08)" opacity="0"/>
+              <circle id="moxie-dot" cx="338" cy="68" r="8" fill="#d4501a" opacity="0"/>
+              <text id="moxie-label" x="350" y="64" fill="#d4501a" font-family="'Space Mono',monospace" font-size="10" font-weight="bold" opacity="0">MOXIE</text>
+              <text id="moxie-sublabel" x="350" y="76" fill="#8a8178" font-family="'Space Mono',monospace" font-size="8" opacity="0">quadrante vazio</text>
+            </svg>
+          </div>
+          <div class="pos-map-legend">
+            <div class="pos-map-legend-title">Concorrentes mapeados</div>
+            <div class="pos-legend-item"><div class="pos-legend-dot" style="background:#d4501a"></div><div class="pos-legend-text"><span class="pos-legend-name">Moxie</span><span class="pos-legend-category">humor inteligente + qualidade alta</span></div></div>
+            <div class="pos-legend-item"><div class="pos-legend-dot" style="background:#7a90e8"></div><div class="pos-legend-text"><span class="pos-legend-name">Bolovo</span><span class="pos-legend-category">qualidade + irreverência (não humor)</span></div></div>
+            <div class="pos-legend-item"><div class="pos-legend-dot" style="background:#e07a7a"></div><div class="pos-legend-text"><span class="pos-legend-name">Strip Me, El Cabriton</span><span class="pos-legend-category">humor, design e material fracos</span></div></div>
+            <div class="pos-legend-item"><div class="pos-legend-dot" style="background:#e8c47a"></div><div class="pos-legend-text"><span class="pos-legend-name">Sometimes</span><span class="pos-legend-category">médio em humor e qualidade</span></div></div>
+            <div class="pos-legend-item"><div class="pos-legend-dot" style="background:#555"></div><div class="pos-legend-text"><span class="pos-legend-name">Chico Rei, Bossa, Colo</span><span class="pos-legend-category">qualidade, humor genérico ou ausente</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Presença nas redes -->
+    <div class="diff-section" id="diff-3">
+      <div class="diff-header" onclick="toggleDiff('diff-3')">
+        <div class="diff-header-left">
+          <div class="diff-header-icon">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="5" cy="10" r="2.5"/><circle cx="15" cy="4" r="2.5"/><circle cx="15" cy="16" r="2.5"/>
+              <path d="M7.3 8.8l5.4-3.2M7.3 11.2l5.4 3.2"/>
+            </svg>
+          </div>
+          <div class="diff-header-text">
+            <span class="diff-eyebrow">03 — Presença digital</span>
+            <span class="diff-title">Como se comportar nas redes</span>
+          </div>
+        </div>
+        <div class="diff-chevron"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 7l5 5 5-5"/></svg></div>
+      </div>
+      <div class="diff-body">
+        <div class="platform-grid">
+          <div class="platform-card">
+            <div class="platform-head">
+              <div class="platform-icon ig">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="16" height="16" rx="4"/><circle cx="10" cy="10" r="3.5"/>
+                  <circle cx="14.5" cy="5.5" r="0.5" fill="currentColor" stroke="none"/>
+                </svg>
+              </div>
+              <div><div class="platform-name">Instagram</div><div class="platform-role ig">Vitrine editorial</div></div>
+            </div>
+            <div class="platform-do">
+              <div class="platform-do-label">Como usar</div>
+              <div class="platform-do-item">Ensaio fotográfico com qualidade — não produto em fundo branco</div>
+              <div class="platform-do-item">Feed organizado, linha editorial consistente, sem poluição visual</div>
+              <div class="platform-do-item">Teasers de estampa: de costas → música temática → vira e revela a história</div>
+              <div class="platform-do-item">Curadoria de SP — bares, cinemas, discos com a pegada da marca</div>
+              <div class="platform-do-item">Produção em lotes, com cuidado. Menos posts, mais nível.</div>
+            </div>
+            <div class="platform-dont">
+              <div class="platform-dont-label">O que não fazer</div>
+              <div class="platform-dont-text">Excesso de posts sem cuidado. Colagens aleatórias. Estética amadora. Bombardear a audiência por obrigação de frequência.</div>
+            </div>
+          </div>
+          <div class="platform-card">
+            <div class="platform-head">
+              <div class="platform-icon tt">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 4h3v8a3 3 0 01-6 0 3 3 0 013-3"/><path d="M12 4a4 4 0 004 4"/>
+                </svg>
+              </div>
+              <div><div class="platform-name">TikTok</div><div class="platform-role tt">Janela de crescimento</div></div>
+            </div>
+            <div class="platform-do">
+              <div class="platform-do-label">Como usar</div>
+              <div class="platform-do-item">Formato espontâneo — menos polido, mais direto e honesto</div>
+              <div class="platform-do-item">Teaser de estampa: costas → música temática → vira e revela</div>
+              <div class="platform-do-item">Testar formatos com baixo custo de produção, ganhar alcance orgânico</div>
+              <div class="platform-do-item">Histórias culturais por trás das estampas — educam o repertório do público</div>
+              <div class="platform-do-item">Carlos tem território natural aqui: voz, comentário, situações recorrentes</div>
+            </div>
+            <div class="platform-dont">
+              <div class="platform-dont-label">O que não fazer</div>
+              <div class="platform-dont-text">Tentar replicar a estética polida do Instagram. TikTok aceita imperfeição — o erro é parecer produção demais.</div>
+            </div>
+          </div>
+          <div class="platform-card">
+            <div class="platform-head">
+              <div class="platform-icon tw">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                  <path d="M3 4l5.5 6.5L3 17h2l4.5-5.5L14 17h3L11 10l5.5-6H14l-4 5L6 4H3z"/>
+                </svg>
+              </div>
+              <div><div class="platform-name">X / Twitter</div><div class="platform-role tw">Voz da marca</div></div>
+            </div>
+            <div class="platform-do">
+              <div class="platform-do-label">Como usar</div>
+              <div class="platform-do-item">Humor em texto — sarcasmo inteligente, opinião com ponto de vista</div>
+              <div class="platform-do-item">Comentário cultural: quando uma referência entra em pauta, a Moxie tem algo a dizer</div>
+              <div class="platform-do-item">Posicionamento de voz — não vender, mas existir com opinião</div>
+              <div class="platform-do-item">Território natural do Carlos em texto: tem voz, tem opinião, tem graça</div>
+            </div>
+            <div class="platform-dont">
+              <div class="platform-dont-label">O que não fazer</div>
+              <div class="platform-dont-text">Usar para venda ou promoção. O público do X consome mais do que posta — a marca entra no repertório, não no carrinho.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <span>Moxie — Documento interno de branding</span>
+  <span>Abril 2026 — Baseado em briefing com Gabriela, founder</span>
+</footer>
+
+<script>
+  /* ── TERRITORY DATA ── */
+  const territories = [
+    {
+      id:'t1', color:'#6fcf7a', dimColor:'rgba(111,207,122,0.1)',
+      badge:'★ Primário — recomendado',
+      title:'A Piada que Você Precisa Merecer',
+      sub:'Território do humor de repertório',
+      icon:`<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8 C5 6 7 5 9 5 L19 5 C21 5 23 6 23 8 L23 17 C23 19 21 20 19 20 L16 20 L14 24 L12 20 L9 20 C7 20 5 19 5 17 Z"/><line x1="9.5" y1="12" x2="12" y2="11" stroke-width="1.8"/><circle cx="17" cy="11.5" r="1.2" fill="currentColor" stroke="none"/><path d="M10 16 Q14 19 18 16" stroke-width="1.5"/></svg>`,
+      desc:'A Moxie não explica a piada. Não precisa. Quem entende, entende — e isso cria pertencimento imediato. O humor funciona como filtro: seleciona o público certo e rejeita quem não está no mesmo repertório. A estampa não é decoração, é senha. Esse território posiciona a marca como guardiã de um repertório cultural específico — micro nichos, trocadilhas, piadas internas que têm mais de uma camada.',
+      attrs:[
+        {label:'Emoção central', value:'Cumplicidade. "Só nós dois sabemos."'},
+        {label:'Arquétipo', value:'O Malandro Culto — esperto, irreverente, sem arrogância'},
+        {label:'Tom de voz', value:'Sarcasmo inteligente. Deixa o subentendido falar.'},
+        {label:'Referência de tom', value:'Netflix: debochada mas respeitosa. Zoeira com classe.'},
+      ],
+      tags:['micro nichos','piadas internas','referências não óbvias','não é geek','trocadilhas','repertório cultural'],
+      risk:'Nicho estreito demais se as referências forem específicas em excesso — calibrar o raio da piada. Testar com pelo menos 3 camadas diferentes de repertório antes de cada lançamento.',
+    },
+    {
+      id:'t2', color:'#e07a7a', dimColor:'rgba(224,122,122,0.1)',
+      badge:'Secundário',
+      title:'Urbano com Sotaque Próprio',
+      sub:'Território da identidade cultural urbana',
+      icon:`<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="14" cy="14" r="10"/><circle cx="14" cy="14" r="5.5" stroke-width="1.2"/><circle cx="14" cy="14" r="2" fill="currentColor" stroke="none"/></svg>`,
+      desc:'A Moxie é de São Paulo — especificamente da Zona Oeste. Pinheiros, Santa Cecília, Copan. Bares com disco na parede, cafeterias com vinil, brechós que parecem museus. Esse território ancora a marca num estilo de vida real, não numa fantasia de lifestyle genérico. O conteúdo de curadoria de SP — bares, cinemas, discos — é extensão natural desse território.',
+      attrs:[
+        {label:'Emoção central', value:'Orgulho de lugar. "Isso é o meu pedaço."'},
+        {label:'Arquétipo', value:'O Nativo Urbano — conhece a cidade por dentro, não por guia'},
+        {label:'Tom de voz', value:'Familiar, íntimo, como quem dá dica de restaurante pra amigo.'},
+        {label:'Formato de conteúdo', value:'Curadoria de SP: bares, discos, cinemas com a pegada da marca'},
+      ],
+      tags:['Pinheiros','Santa Cecília','Copan','compra vinil','curadoria SP','bares de moda','urbano boêmio'],
+      risk:'Pode soar localista para e-commerce nacional — usar como sotaque e ponto de vista, não como cercado geográfico. A marca é de SP mas fala com quem tem o mesmo repertório em qualquer cidade.',
+    },
+    {
+      id:'t3', color:'#7a90e8', dimColor:'rgba(122,144,232,0.1)',
+      badge:'Complementar',
+      title:'O Design é o Argumento',
+      sub:'Território da excelência artesanal gráfica',
+      icon:`<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22 L9 19 L22 6 L24 8 L11 21 Z"/><path d="M6 22 L4 24 L6 24 L8 22"/><path d="M22 6 L24 4 Q26 4 26 6 L24 8"/></svg>`,
+      desc:'Enquanto concorrentes colam foto de série em camiseta, a Moxie transforma a brincadeira em ilustração. O processo gráfico é o diferencial. Esse território posiciona a marca na interseção entre moda e arte aplicada — onde a estampa é obra, não clipart. A estética retrô anos 70 com pegada urbana é a assinatura visual que diferencia cada peça.',
+      attrs:[
+        {label:'Emoção central', value:'Admiração. "Como chegaram nisso?"'},
+        {label:'Arquétipo', value:'O Artesão Irônico — capricho técnico a serviço do humor'},
+        {label:'Tom de voz', value:'Confiante, sem explicar demais. O trabalho fala.'},
+        {label:'Diferencial técnico', value:'100% algodão, caimento trabalhado, ilustração original — nunca foto ou template'},
+      ],
+      tags:['transformar em ilustração','design cuidadoso','não é foto colada','retrô anos 70','arte aplicada','acabamento'],
+      risk:'Pode virar território de marca de arte, não de moda. Manter o humor como âncora e lembrar que o design existe a serviço da piada — não ao contrário.',
+    },
+    {
+      id:'t4', color:'#e8c47a', dimColor:'rgba(232,196,122,0.1)',
+      badge:'Complementar',
+      title:'A Roupa Como Manifesto Silencioso',
+      sub:'Território da expressão de identidade',
+      icon:`<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5 Q7 8 3 8 L5 13 L8 12 L8 23 L20 23 L20 12 L23 13 L25 8 Q21 8 19 5 Q17 8 14 8 Q11 8 9 5Z"/></svg>`,
+      desc:'Vestir Moxie é uma declaração sem precisar fazer discurso. O público não escolhe roupa por acaso — escolhe o que comunica quem é. Esse território conecta produto e identidade de forma direta, posicionando a marca como ferramenta de auto-expressão para quem tem repertório e não quer precisar explicar suas referências.',
+      attrs:[
+        {label:'Emoção central', value:'Reconhecimento. "Essa marca me vê."'},
+        {label:'Arquétipo', value:'O Indivíduo que se recusa a ser genérico'},
+        {label:'Tom de voz', value:'Direto, sem romance. A roupa faz o trabalho.'},
+        {label:'Público-alvo', value:'Entre nerd e hipster — monta looks, compra vinil, frequenta ambientes culturais'},
+      ],
+      tags:['moda como expressão','monta looks','se importa com roupa','não é low profile','auto-expressão','personalidade'],
+      risk:'Discurso muito usado por marcas de lifestyle — diferenciar pela especificidade cultural, não pelo tom aspiracional. "Se expressar" sozinho não é diferencial. O repertório específico é.',
+    },
+    {
+      id:'t5', color:'#e07ac4', dimColor:'rgba(224,122,196,0.1)',
+      badge:'Exploratório',
+      title:'Carlos e o Universo Expandido',
+      sub:'Território do entretenimento de marca',
+      icon:`<svg viewBox="0 0 28 28" fill="currentColor" stroke="none"><ellipse cx="14" cy="19.5" rx="5.5" ry="4.5"/><ellipse cx="7.5" cy="15" rx="2.3" ry="3"/><ellipse cx="11" cy="11.5" rx="2.3" ry="3"/><ellipse cx="17" cy="11.5" rx="2.3" ry="3"/><ellipse cx="20.5" cy="15" rx="2.3" ry="3"/></svg>`,
+      desc:'Carlos não é mascote — é personagem. Esse território aposta na Moxie como produtora de cultura, não apenas de roupas. Carlos conta histórias, comenta o mundo, tem opiniões. A marca vira referência de entretenimento para o público, e o produto entra como extensão natural desse universo. Inspiração: comunicação da Netflix — debochada, mas respeitosa.',
+      attrs:[
+        {label:'Emoção central', value:'Afeto + diversão. "Esse cachorro é igual a mim."'},
+        {label:'Arquétipo', value:'O Bobo da Corte com PhD — faz graça, mas sabe o que faz'},
+        {label:'Tom de voz', value:'Bem-humorado, com voz própria. Carlos tem personalidade, não só piadas.'},
+        {label:'Papel estratégico', value:'Resolve o problema do rosto sem abrir mão de personalidade. Estagiário das redes.'},
+      ],
+      tags:['Carlos estagiário','narrativa de bastidor','sem mostrar rosto','tom Netflix','cachorro caramelo','personagem editorial'],
+      risk:'Demanda consistência editorial altíssima. Se Carlos sumir por 3 semanas, o território quebra. Carlos precisa de voz consistente e situações recorrentes — não pode ser usado só quando é conveniente.',
+    },
+  ];
+
+  /* ── MODAL ── */
+  let currentCard = null;
+
+  function openCard(idx) {
+    const d = territories[idx];
+    currentCard = idx;
+    const mi = document.getElementById('m-icon');
+    mi.innerHTML = d.icon; mi.style.background = d.dimColor; mi.style.color = d.color;
+    const mb = document.getElementById('m-badge');
+    mb.textContent = d.badge; mb.style.background = d.dimColor; mb.style.color = d.color;
+    document.getElementById('m-title').textContent = d.title;
+    document.getElementById('m-title').style.color = d.color;
+    document.getElementById('m-sub').textContent = d.sub;
+    document.getElementById('m-desc').textContent = d.desc;
+    document.getElementById('m-attrs').innerHTML = d.attrs.map(a =>
+      `<div class="modal-attr"><span class="attr-lbl">${a.label}</span><span class="attr-val">${a.value}</span></div>`
+    ).join('');
+    document.getElementById('m-tags').innerHTML =
+      `<div class="modal-tags-label">Ancoragem no briefing</div><div class="tag-row">${d.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`;
+    document.getElementById('m-risk-text').textContent = d.risk;
+    document.getElementById('modal-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('modal').scrollTop = 0;
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+    currentCard = null;
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('modal-overlay')) closeModal();
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeModal(); closeMenu(); }
+    if ((e.key === 'Enter' || e.key === ' ') && document.activeElement?.classList.contains('t-card')) {
+      const cards = [...document.querySelectorAll('.t-card')];
+      openCard(cards.indexOf(document.activeElement));
+    }
+    if (currentCard !== null) {
+      if (e.key === 'ArrowRight') openCard((currentCard + 1) % 5);
+      if (e.key === 'ArrowLeft') openCard((currentCard + 4) % 5);
+    }
+  });
+
+  /* ── NAV ── */
+  const navObserver = new IntersectionObserver(entries => {
+    document.getElementById('nav').classList.toggle('visible', !entries[0].isIntersecting);
+  }, { threshold: 0.1 });
+  navObserver.observe(document.getElementById('hero'));
+
+  function toggleMenu() {
+    const open = document.getElementById('mobile-menu').classList.toggle('open');
+    document.getElementById('hamburger').classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  function closeMenu() {
+    document.getElementById('mobile-menu').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* ── TENSIONS ── */
+  document.querySelectorAll('.tension-row').forEach(row => {
+    row.addEventListener('mouseenter', () => {
+      document.querySelectorAll(`.tension-row[data-pair="${row.dataset.pair}"]`).forEach(r => r.classList.add('highlighted'));
+    });
+    row.addEventListener('mouseleave', () => {
+      document.querySelectorAll('.tension-row').forEach(r => r.classList.remove('highlighted'));
+    });
+  });
+
+  /* ── RADAR ── */
+  const rcx = 200, rcy = 200, maxR = 120;
+  const angles = [-90,-18,54,126,198].map(a => a * Math.PI / 180);
+  const pcts = [0.95, 0.72, 0.85, 0.78, 0.62];
+  let radarDone = false;
+
+  function animateRadar() {
+    if (radarDone) return; radarDone = true;
+    const poly = document.getElementById('radar-poly');
+    const start = performance.now();
+    function frame(now) {
+      const t = Math.min((now - start) / 900, 1);
+      const e = 1 - Math.pow(1 - t, 3);
+      poly.setAttribute('points', angles.map((a,i) => {
+        const x = rcx + maxR * pcts[i] * e * Math.cos(a);
+        const y = rcy + maxR * pcts[i] * e * Math.sin(a);
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      }).join(' '));
+      ['rd0','rd1','rd2','rd3','rd4'].forEach((id,i) => {
+        const dot = document.getElementById(id);
+        dot.setAttribute('cx', (rcx + maxR * pcts[i] * e * Math.cos(angles[i])).toFixed(1));
+        dot.setAttribute('cy', (rcy + maxR * pcts[i] * e * Math.sin(angles[i])).toFixed(1));
+        dot.setAttribute('opacity', e.toFixed(2));
+      });
+      if (t < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+    document.querySelectorAll('.legend-fill').forEach(el => { el.style.width = el.dataset.pct + '%'; });
+  }
+
+  new IntersectionObserver(entries => { if (entries[0].isIntersecting) animateRadar(); }, {threshold:0.3})
+    .observe(document.querySelector('.radar-wrap'));
+
+  /* ── POSITIONING MAP ── */
+  let posMapDone = false;
+  function animatePosMap() {
+    if (posMapDone) return; posMapDone = true;
+    const els = ['moxie-dot','moxie-ring','moxie-label','moxie-sublabel'].map(id => document.getElementById(id));
+    const start = performance.now();
+    function frame(now) {
+      const t = Math.min((now - start) / 600, 1);
+      const e = 1 - Math.pow(1 - t, 3);
+      els.forEach(el => { if (el) el.setAttribute('opacity', e.toFixed(2)); });
+      if (t < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ── POSITIONING PILLARS ── */
+  function togglePillar(el) {
+    const isOpen = el.classList.contains('expanded');
+    document.querySelectorAll('.pos-pillar').forEach(p => {
+      p.classList.remove('expanded');
+      p.querySelector('.pos-pillar-expand').classList.remove('open');
+      const s = p.querySelector('.pos-toggle span');
+      if (s) s.textContent = 'Expandir';
+    });
+    if (!isOpen) {
+      el.classList.add('expanded');
+      el.querySelector('.pos-pillar-expand').classList.add('open');
+      const s = el.querySelector('.pos-toggle span');
+      if (s) s.textContent = 'Recolher';
+    }
+  }
+
+  /* ── PRODUCT ACCORDIONS ── */
+  function toggleDiff(id) {
+    const sec = document.getElementById(id);
+    const opening = !sec.classList.contains('open');
+    sec.classList.toggle('open', opening);
+    if (id === 'diff-2' && opening) setTimeout(animatePosMap, 350);
+  }
+
+  /* ── AUDIENCE TABS ── */
+  function switchTab(idx) {
+    document.querySelectorAll('.aud-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+    document.querySelectorAll('.aud-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+  }
+
+  /* ── SCROLL REVEAL ── */
+  const revealObs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+</script>
+
+</body>
+</html>
